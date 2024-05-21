@@ -1,0 +1,126 @@
+@import '@bobanm/cardinal';
+
+:root {
+    --orange: #f2bc0f;
+    --blue: #00adfe;
+    --green: #4bc190;
+    --red: #f85565;
+    --gray: #a7aece;
+}
+
+body {
+    font-size: 1em;
+}
+
+main {
+    max-width: 66em;
+    grid-template-areas:
+        'sign-in'
+        'account'
+        'error';
+}
+
+#sign-in {
+    grid-area: sign-in;
+}
+#account {
+    grid-area: account;
+}
+#error {
+    grid-area: error;
+}
+
+table {
+    border-spacing: 1.1em 0.5em;
+    font-size: 0.875em;
+    width: 100%;
+    margin-bottom: 1.5em;
+    border-top: 1px solid var(--green);
+    border-bottom: 1px solid var(--green);
+}
+
+th {
+    text-align: left;
+    font-weight: var(--weight2);
+}
+
+th.priority2, td.priority2, th.priority3, td.priority3 {
+    display: none;
+}
+
+@media (min-width: 44em) {
+    body {
+        font-size: 1.125rem;
+    }
+    main {
+        margin-top: 2em;
+        gap: 1em;
+        grid-template-columns: 1fr 1fr;
+        grid-template-areas:
+            'sign-in account'
+            'error error';
+    }
+    table {
+        font-size: 1rem;
+    }
+    th.priority2, td.priority2 {
+        display: table-cell;
+    }
+}
+
+@media (min-width: 70em) {
+    th.priority3, td.priority3 {
+        display: table-cell;
+    }
+}
+
+img.right {
+    width: 4em;
+    margin-top: -1.5em;
+}
+
+.top-green {
+    border-top-color: var(--green);
+}
+.top-gray {
+    border-top-color: var(--gray);
+}
+
+.start {
+    margin-top: 1em;
+}
+
+.end {
+    margin-bottom: 1em;
+}
+
+.center {
+    text-align: center;
+}
+
+button.btn-green:enabled {
+    background-color: var(--green);
+    border: 1px solid var(--green);
+}
+
+button.btn-green:hover:enabled, button.btn-green:active:enabled {
+    color: var(--green);
+}
+
+button:hover:enabled, button:active:enabled {
+    background-color: initial;
+    color: var(--veryDarkBlue)
+}
+
+input {
+    width: 18em;
+}
+
+input:disabled {
+    background-color: lightgray;
+}
+
+label {
+    display: inline-block;
+    width: 5em;
+}

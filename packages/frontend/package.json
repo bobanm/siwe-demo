@@ -1,0 +1,30 @@
+{
+    "name": "siwe-demo-frontend",
+    "version": "0.0.0",
+    "scripts": {
+        "dev": "vite",
+        "preview": "vite preview",
+        "build-only": "vite build",
+        "type-check": "vue-tsc --build --force",
+        "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
+    },
+    "dependencies": {
+        "@bobanm/cardinal": "^0.0.8",
+        "ethers": "6.12.1",
+        "siwe": "2.3.2",
+        "vue": "3.4.27"
+    },
+    "devDependencies": {
+        "@rushstack/eslint-patch": "1.10.3",
+        "@tsconfig/node20": "20.1.4",
+        "@types/node": "20.12.12",
+        "@vitejs/plugin-vue": "5.0.4",
+        "@vue/eslint-config-typescript": "13.0.0",
+        "@vue/tsconfig": "0.5.1",
+        "eslint": "8.57.0",
+        "eslint-plugin-vue": "9.26.0",
+        "typescript": "5.4.5",
+        "vite": "5.2.11",
+        "vue-tsc": "2.0.19"
+    }
+}
