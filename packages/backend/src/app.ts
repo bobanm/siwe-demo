@@ -10,6 +10,7 @@ import { accountRouter } from './routes/account'
 import type { DataSource } from 'typeorm'
 import type { Server } from 'http'
 
+const PORT = 3001
 
 async function start() {
 
@@ -25,8 +26,8 @@ async function start() {
         app.use('/sign-in', signInRouter)
         app.use('/account', accountRouter)
 
-        const server = app.listen(3000, () => {
-            console.log('Listening to HTTP requests on port 3000...')
+        const server = app.listen(PORT, () => {
+            console.log(`Listening to HTTP requests on port ${PORT}...`)
         })
 
         process.on('SIGINT', shutdown(server, dataSource))

@@ -1,15 +1,15 @@
 <script setup lang="ts">
 
 import { inject } from 'vue'
-import { BrowserProvider } from 'ethers'
 import { BACKEND_URL } from '../config'
+import type { BrowserProvider } from 'ethers'
 
 const isSignedIn = defineModel('isSignedIn')
 const address = defineModel('address')
 const username = defineModel('username')
 const bio = defineModel('bio')
 
-const provider = inject<BrowserProvider>('provider')
+const provider = inject<BrowserProvider>('provider') as BrowserProvider
 
 async function signInWithEthereum() {
 
