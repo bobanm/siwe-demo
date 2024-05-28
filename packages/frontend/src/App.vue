@@ -9,30 +9,28 @@ import ErrorBox from './components/ErrorBox.vue'
 
 let provider: BrowserProvider
 
-const errorMessage = ref('')
+const isWalletInstalled = ref(false)
 const isSignedIn = ref(false)
 const accessToken = ref('')
 const address = ref('')
 const username = ref('')
 const bio = ref('')
 
-if (!window.ethereum) {
-    errorMessage.value = 'Web3 wallet not installed'
-}
-else {
+if (window.ethereum) {
     provider = new BrowserProvider(window.ethereum)
     provide('provider', provider)
+    isWalletInstalled.value = true
 }
 
 </script>
 
 <template>
-    <main v-if="!errorMessage">
+    <main v-if="isWalletInstalled">
         <SignInBox v-model:isSignedIn="isSignedIn" v-model:accessToken="accessToken" v-model:address="address" v-model:username="username" v-model:bio="bio" />
         <AccountBox v-model:username="username" v-model:bio="bio" :accessToken="accessToken" :address="address" :isSignedIn="isSignedIn"/>
     </main>
     <main v-else>
-        <ErrorBox>{{ errorMessage }}</ErrorBox>
+        <ErrorBox/>
     </main>
 
     <footer>
