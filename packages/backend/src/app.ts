@@ -7,10 +7,12 @@ import { messageRouter } from './routes/message'
 import { signInRouter } from './routes/sign-in'
 import { accountRouter } from './routes/account'
 
+import { verifyToken } from './middleware/verify-token'
+
+import { PORT } from './config'
+
 import type { DataSource } from 'typeorm'
 import type { Server } from 'http'
-
-const PORT = 3001
 
 async function start() {
 
@@ -24,6 +26,9 @@ async function start() {
 
         app.use('/message', messageRouter)
         app.use('/sign-in', signInRouter)
+
+        // All routes below require authentication
+        app.use(verifyToken)
         app.use('/account', accountRouter)
 
         const server = app.listen(PORT, () => {

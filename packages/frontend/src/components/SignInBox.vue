@@ -4,6 +4,7 @@ import { inject } from 'vue'
 import { BACKEND_URL } from '../config'
 import type { BrowserProvider } from 'ethers'
 
+const accessToken = defineModel('accessToken')
 const isSignedIn = defineModel('isSignedIn')
 const address = defineModel('address')
 const username = defineModel('username')
@@ -43,13 +44,16 @@ async function signInWithEthereum() {
         return
     }
 
-    const account = await signInResponse.json()
+    // Destructure as token, to avoid name conflict with accessToken model
+    const { accessToken: token, account } = await signInResponse.json()
+    console.log(token)
     console.log(account)
 
     address.value = account.address
     username.value = account.username
     bio.value = account.bio
     isSignedIn.value = true
+    accessToken.value = token
 }
 
 function signOut() {
@@ -58,6 +62,7 @@ function signOut() {
     username.value = ''
     bio.value = ''
     isSignedIn.value = false
+    accessToken.value = ''
 }
 
 </script>

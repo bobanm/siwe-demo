@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import { SiweMessage } from 'siwe'
+import { sign } from 'jsonwebtoken'
 import { Account } from '../entities/account'
+import { SECRET } from '../config'
 
 const signInRouter = Router()
 
@@ -20,7 +22,9 @@ signInRouter.post('/', async (request, response) => {
 
         if (result.success) {
             const account = await Account.findOrCreate(siweMessage.address)
-            response.send(account)
+            const accessToken = sign({ address: siweMessage.address }, SECRET, { expiresIn: '1h' })
+
+            response.send({ accessToken, account })
         }
     }
     catch (error) {

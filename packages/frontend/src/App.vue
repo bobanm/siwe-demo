@@ -11,6 +11,7 @@ let provider: BrowserProvider
 
 const errorMessage = ref('')
 const isSignedIn = ref(false)
+const accessToken = ref('')
 const address = ref('')
 const username = ref('')
 const bio = ref('')
@@ -27,8 +28,8 @@ else {
 
 <template>
     <main v-if="!errorMessage">
-        <SignInBox v-model:isSignedIn="isSignedIn" v-model:address="address" v-model:username="username" v-model:bio="bio" />
-        <AccountBox v-model:username="username" v-model:bio="bio" :address="address" :isSignedIn="isSignedIn"/>
+        <SignInBox v-model:isSignedIn="isSignedIn" v-model:accessToken="accessToken" v-model:address="address" v-model:username="username" v-model:bio="bio" />
+        <AccountBox v-model:username="username" v-model:bio="bio" :accessToken="accessToken" :address="address" :isSignedIn="isSignedIn"/>
     </main>
     <main v-else>
         <ErrorBox>{{ errorMessage }}</ErrorBox>

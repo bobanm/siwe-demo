@@ -6,7 +6,7 @@ const username = defineModel('username')
 const bio = defineModel('bio')
 
 const props = defineProps({
-    address: String,
+    accessToken: String,
     isSignedIn: Boolean,
 })
 
@@ -16,9 +16,9 @@ async function updateAccount() {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
+            'Authorization': `Bearer ${props.accessToken}`,
         },
         body: JSON.stringify({
-            address: props.address,
             username: username.value,
             bio: bio.value
         }),
