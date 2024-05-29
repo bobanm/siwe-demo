@@ -6,6 +6,7 @@ import { BrowserProvider } from 'ethers'
 import SignInBox from './components/SignInBox.vue'
 import AccountBox from './components/AccountBox.vue'
 import ErrorBox from './components/ErrorBox.vue'
+import FeedBox from './components/FeedBox.vue'
 
 let provider: BrowserProvider
 
@@ -28,6 +29,7 @@ if (window.ethereum) {
     <main v-if="isWalletInstalled">
         <SignInBox v-model:isSignedIn="isSignedIn" v-model:accessToken="accessToken" v-model:address="address" v-model:username="username" v-model:bio="bio" />
         <AccountBox v-model:username="username" v-model:bio="bio" :accessToken="accessToken" :address="address" :isSignedIn="isSignedIn"/>
+        <FeedBox v-if="isSignedIn" :accessToken="accessToken"/>
     </main>
     <main v-else>
         <ErrorBox/>

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { BACKEND_URL } from '../config'
+import { BACKEND_URL } from '@/config'
 
 const username = defineModel('username')
 const bio = defineModel('bio')

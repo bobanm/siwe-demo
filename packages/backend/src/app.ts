@@ -6,6 +6,7 @@ import { dataSource } from './data-source'
 import { messageRouter } from './routes/message'
 import { signInRouter } from './routes/sign-in'
 import { accountRouter } from './routes/account'
+import { postRouter } from './routes/post'
 
 import { verifyToken } from './middleware/verify-token'
 
@@ -30,6 +31,7 @@ async function start() {
         // All routes below require authentication
         app.use(verifyToken)
         app.use('/account', accountRouter)
+        app.use('/post', postRouter)
 
         const server = app.listen(PORT, () => {
             console.log(`Listening to HTTP requests on port ${PORT}...`)

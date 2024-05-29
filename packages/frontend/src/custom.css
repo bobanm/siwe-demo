@@ -17,6 +17,7 @@ main {
     grid-template-areas:
         'sign-in'
         'account'
+        'feed'
         'error';
 }
 
@@ -25,6 +26,9 @@ main {
 }
 #account {
     grid-area: account;
+}
+#feed {
+    grid-area: feed;
 }
 #error {
     grid-area: error;
@@ -58,7 +62,8 @@ th.priority2, td.priority2, th.priority3, td.priority3 {
         grid-template-columns: 1fr 1fr;
         grid-template-areas:
             'sign-in account'
-            'error error';
+            'feed    .......'
+            'error   error';
     }
     table {
         font-size: 1rem;
@@ -123,4 +128,51 @@ input:disabled {
 label {
     display: inline-block;
     width: 5em;
+}
+
+div.post {
+    margin-top: 2.2em;
+}
+
+div.post > .address {
+    font-weight: var(--weight2)
+}
+
+div.post > .date {
+    font-size: 0.9em;
+    margin-bottom: 0.8em;
+}
+
+textarea {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+    color: inherit;
+    margin: 0.3em 0.3em;
+    border-radius: 0.3em;
+    transition-duration: 0.5s;
+    transition-timing-function: ease-out;
+    padding: 0.4em 0.4em;
+    border: 1px solid var(--grayishBlue);
+    outline: 0 none;
+    width: 95%;
+}
+
+textarea {
+    resize: none;
+}
+textarea:focus {
+    border-color: var(--grayishBlue);
+    box-shadow: 0 1px 1px var(--veryLightGray) inset, 0 0 10px var(--grayishBlue);
+}
+textarea.input-blue:focus {
+    border-color: var(--blue);
+    box-shadow: 0 1px 1px var(--veryLightGray) inset, 0 0 10px var(--blue);
+}
+textarea::placeholder {
+    color:var(--gray);
+}
+
+.follower {
+    margin-left: 1.2em;
 }

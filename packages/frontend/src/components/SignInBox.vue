@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { inject } from 'vue'
-import { BACKEND_URL } from '../config'
+import { BACKEND_URL } from '@/config'
 import type { BrowserProvider } from 'ethers'
 
 const accessToken = defineModel('accessToken')
