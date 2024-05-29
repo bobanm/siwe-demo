@@ -38,6 +38,8 @@ async function submitPost() {
 
     const post = await response.json()
     console.log(post)
+
+    posts.value.unshift(post)
 }
 
 async function fetchPosts() {
