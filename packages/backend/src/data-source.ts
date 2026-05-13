@@ -6,9 +6,10 @@ import { Account } from './entities/account'
 import { Post } from './entities/post'
 
 export const dataSource = new DataSource({
-    type: 'sqlite',
-    database: path.join(os.homedir(), 'siwe', 'siwe.sqlite'),
+    type: 'sqljs',
+    location: path.join(os.homedir(), 'siwe', 'siwe.sqlite'),
     entities: [Account, Post],
     synchronize: true,
     logging: false,
+    autoSave: true,
 })
