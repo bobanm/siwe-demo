@@ -20,7 +20,7 @@ async function signInWithEthereum() {
     const encodedParams = {
         address: encodeURIComponent(signer.address),
         chainId: encodeURIComponent(String(chainId)),
-        domain: encodeURIComponent(window.location.host),
+        origin: encodeURIComponent(window.location.origin),
     }
 
     const message = await (await fetch(`${BACKEND_URL}/message?${new URLSearchParams(encodedParams)}`)).text()
