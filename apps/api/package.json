@@ -1,5 +1,5 @@
 {
-    "name": "siwe-demo-backend",
+    "name": "api",
     "version": "0.0.0",
     "scripts": {
         "start": "bun src/app.ts"
