@@ -1,14 +1,14 @@
 <script setup lang="ts">
 
 import { ref, provide } from 'vue'
-import { BrowserProvider } from 'ethers'
+import { createWalletClient, custom, type WalletClient } from 'viem'
 
 import SignInBox from './components/SignInBox.vue'
 import AccountBox from './components/AccountBox.vue'
 import ErrorBox from './components/ErrorBox.vue'
 import FeedBox from './components/FeedBox.vue'
 
-let provider: BrowserProvider
+let walletClient: WalletClient
 
 const isWalletInstalled = ref(false)
 const isSignedIn = ref(false)
@@ -18,8 +18,8 @@ const username = ref('')
 const bio = ref('')
 
 if (window.ethereum) {
-    provider = new BrowserProvider(window.ethereum)
-    provide('provider', provider)
+    walletClient = createWalletClient({ transport: custom(window.ethereum) })
+    provide('walletClient', walletClient)
     isWalletInstalled.value = true
 }
 

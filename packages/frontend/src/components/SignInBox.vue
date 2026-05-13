@@ -2,7 +2,7 @@
 
 import { inject } from 'vue'
 import { BACKEND_URL } from '@/config'
-import type { BrowserProvider } from 'ethers'
+import type { WalletClient } from 'viem'
 
 const accessToken = defineModel('accessToken')
 const isSignedIn = defineModel('isSignedIn')
@@ -10,15 +10,15 @@ const address = defineModel('address')
 const username = defineModel('username')
 const bio = defineModel('bio')
 
-const provider = inject<BrowserProvider>('provider') as BrowserProvider
+const walletClient = inject<WalletClient>('walletClient') as WalletClient
 
 async function signInWithEthereum() {
 
-    const signer = await provider.getSigner()
-    const chainId = (await (provider.getNetwork())).chainId
+    const [walletAddress] = await walletClient.getAddresses()
+    const chainId = await walletClient.getChainId()
 
     const encodedParams = {
-        address: encodeURIComponent(signer.address),
+        address: encodeURIComponent(walletAddress),
         chainId: encodeURIComponent(String(chainId)),
         origin: encodeURIComponent(window.location.origin),
     }
@@ -26,7 +26,7 @@ async function signInWithEthereum() {
     const message = await (await fetch(`${BACKEND_URL}/message?${new URLSearchParams(encodedParams)}`)).text()
     console.log(message)
 
-    const signature = await signer.signMessage(message)
+    const signature = await walletClient.signMessage({ account: walletAddress, message })
     console.log(signature)
 
     const signInResponse = await fetch(`${BACKEND_URL}/sign-in`, {
