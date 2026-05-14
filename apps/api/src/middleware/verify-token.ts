@@ -20,7 +20,8 @@ export function verifyToken(request: Request, response: Response, next: NextFunc
         request.headers['x-address'] = decodedToken.address
         next()
     }
-    catch (error) {
+    catch (error: any) {
+        console.error(`Error = ${error.name}\nMessage = ${error.message}\nToken = ${token}`)
 
         return response.status(403).send({ message: 'Invalid access token.' });
     }
