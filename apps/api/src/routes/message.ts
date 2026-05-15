@@ -1,18 +1,18 @@
-import { Router } from 'express'
+import { Hono } from 'hono'
+import { HTTPException } from 'hono/http-exception'
 import { SiweMessage } from 'siwe'
 
-const messageRouter = Router()
+export const messageRouter = new Hono()
 
-messageRouter.get('/', (request, response) => {
+messageRouter.get('/', ctx => {
 
-    if (!request.query.address || !request.query.chainId || !request.query.origin) {
-        response.status(422).send('Request must contain 3 mandatory arguments: _address_, _chainId_, and _origin_.')
+    if (!ctx.req.query('address') || !ctx.req.query('chainId') || !ctx.req.query('origin')) {
 
-        return
+        throw new HTTPException(422, { message: 'Request must contain 3 mandatory arguments: address, chainId, and origin.' })
     }
 
-    const { origin, address, chainId } = request.query
-    const decodedOrigin = decodeURIComponent(origin as string)
+    const { origin, address, chainId } = ctx.req.query()
+    const decodedOrigin = decodeURIComponent(origin)
 
     try {
         const siweMessage = new SiweMessage({
@@ -24,12 +24,11 @@ messageRouter.get('/', (request, response) => {
             chainId: Number(decodeURIComponent(chainId as string)),
         })
 
-        response.send(siweMessage.prepareMessage())
+        return ctx.text(siweMessage.prepareMessage())
     }
     catch (err: any) {
         console.error(err)
-        response.status(422).send(err.message)
+
+        throw new HTTPException(422, { message: err.message })
     }
 })
-
-export { messageRouter }
