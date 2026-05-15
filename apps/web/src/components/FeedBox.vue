@@ -1,7 +1,7 @@
 <script setup lang="ts">
 
 import { BACKEND_URL } from '@/config';
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 
 type Post = {
     address: string,
@@ -15,6 +15,13 @@ const props = defineProps({
 
 const posts = ref<Post[]>([])
 const content = ref('')
+
+// Load the posts when a user logs in
+onMounted(() => {
+    if (props.accessToken) {
+        fetchPosts()
+    }
+})
 
 async function submitPost() {
 
@@ -70,11 +77,10 @@ async function fetchPosts() {
         <img src="../images/hipster.svg" class="right zoom">
         <h2>Feed</h2>
         <div><textarea v-model="content" id="post" class="input-blue" rows="3" placeholder="Share something with the world..."></textarea></div>
-        <button @click="submitPost" :disabled="content.length == 0" class="btn-blue">Submit Post</button>
-        <button @click="fetchPosts" class="btn-blue follower">Fetch Posts</button>
+        <button @click="submitPost" :disabled="content.length == 0" class="btn-blue">New Post</button>
         <div v-for="post in posts" :key="post.address" class="post">
-            <div class="address">{{ post.address }}</div>
-            <div class="date">{{ new Date(post.timestamp).toLocaleString() }}</div>
+            <div class="address">👽 {{ post.address }}</div>
+            <div class="date">📅 {{ new Date(post.timestamp).toLocaleString() }}</div>
             <div class="content">{{ post.content }}</div>
         </div>
     </section>
