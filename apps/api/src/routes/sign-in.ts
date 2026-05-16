@@ -3,7 +3,9 @@ import { sign } from 'hono/jwt'
 import { JWTPayload } from 'hono/utils/jwt/types'
 import { HTTPException } from 'hono/http-exception'
 import { SiweMessage } from 'siwe'
-import { Account } from '../entities/account'
+import { eq } from 'drizzle-orm'
+import { db } from '../db/db'
+import { account } from '../db/schema'
 import { SECRET } from '../config'
 
 export const signInRouter = new Hono()
@@ -18,10 +20,9 @@ signInRouter.post('/', async ctx => {
     catch (err: any) {
         // Gracefully handle malformed JSON
         // TODO: Move this to a shared util function
-        if (err instanceof SyntaxError) {
+        console.error(err)
 
-            throw new HTTPException(422, { message: err.message })
-        }
+        throw new HTTPException(422, { message: 'Could not parse JSON.' })
     }
 
     if (!message || !signature) {
@@ -31,23 +32,31 @@ signInRouter.post('/', async ctx => {
 
     try {
         const siweMessage = new SiweMessage(message)
-        const result = await siweMessage.verify({ signature })
+        // By default, siweMessage.verify will throw if verification fails
+        await siweMessage.verify({ signature })
 
-        if (result.success) {
-            const account = await Account.findOrCreate(siweMessage.address)
+        let accounts = await db.select()
+            .from(account)
+            .where(eq(account.address, siweMessage.address))
 
-            const claims: JWTPayload = {
-                sub: siweMessage.address,
-                exp: Math.floor(Date.now() / 1000) + 60 * 60 * 2, // The token expires in 2 hours
-            }
-            const accessToken = await sign(claims, SECRET)
-
-            return ctx.json({ accessToken, account })
+        if (accounts.length === 0) {
+            accounts = await db.insert(account)
+                .values({ address: siweMessage.address })
+                .returning()
         }
+
+        const claims: JWTPayload = {
+            sub: siweMessage.address,
+            exp: Math.floor(Date.now() / 1000) + 60 * 60 * 2, // The token expires in 2 hours
+        }
+        const accessToken = await sign(claims, SECRET)
+
+        return ctx.json({ accessToken, account: accounts[0] })
     }
     catch (err) {
-        console.error('Error verifying SIWE message:', err)
+        const errMsg = 'Error verifying SIWE message:'
+        console.error(errMsg, err)
 
-        throw new HTTPException(401, { message: 'Invalid signature' })
+        throw new HTTPException(401, { message: errMsg })
     }
 })

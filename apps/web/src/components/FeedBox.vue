@@ -80,7 +80,7 @@ async function fetchPosts() {
         <button @click="submitPost" :disabled="content.length == 0" class="btn-blue">New Post</button>
         <div v-for="post in posts" :key="post.address" class="post">
             <div class="address">👽 {{ post.address }}</div>
-            <div class="date">📅 {{ new Date(post.timestamp).toLocaleString() }}</div>
+            <div class="date">📅 {{ new Date(post.timestamp * 1000).toLocaleString('en-GB') }}</div>
             <div class="content">{{ post.content }}</div>
         </div>
     </section>

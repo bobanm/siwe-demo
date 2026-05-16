@@ -2,11 +2,9 @@
     "name": "api",
     "version": "0.0.0",
     "dependencies": {
+        "drizzle-orm": "1.0.0-rc.2",
         "hono": "^4.12.18",
-        "reflect-metadata": "0.2.2",
-        "siwe": "2.3.2",
-        "sql.js": "^1.14.1",
-        "typeorm": "^0.3.29"
+        "siwe": "2.3.2"
     },
     "scripts": {
         "start": "bun src/app.ts"

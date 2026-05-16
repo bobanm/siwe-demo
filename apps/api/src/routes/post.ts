@@ -1,7 +1,9 @@
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import { desc } from 'drizzle-orm'
 import { ContextTypes, jwtMiddleware } from '../middleware/jwt'
-import { Post } from '../entities/post'
+import { db } from '../db/db'
+import { post } from '../db/schema'
 
 export const postRouter = new Hono<ContextTypes>()
 
@@ -9,7 +11,7 @@ postRouter.use(jwtMiddleware)
 
 postRouter.get('/', async ctx => {
 
-    const posts = await Post.find({ order: { timestamp: 'desc' } })
+    const posts = await db.select().from(post).orderBy(desc(post.timestamp))
 
     return ctx.json(posts)
 })
@@ -19,19 +21,18 @@ postRouter.post('/', async ctx => {
     // TODO: Add error handling for parsing JSON
     const { content } = await ctx.req.json()
 
-    const post = new Post()
-    post.address = ctx.get('jwtPayload').sub
-    post.timestamp = Date.now()
-    post.content = content
-
     try {
-        await post.save()
+        const posts = await db.insert(post).values({
+            address: ctx.get('jwtPayload').sub,
+            content,
+        }).returning()
 
-        return ctx.json(post)
+        return ctx.json(posts[0])
     }
     catch (err: any) {
-        console.error(err.message)
+        const errMsg = 'Could not save the post'
+        console.error(errMsg, err)
 
-        throw new HTTPException(500, { message: 'Could not save the post' })
+        throw new HTTPException(500, { message: errMsg })
     }
 })
