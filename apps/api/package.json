@@ -4,9 +4,14 @@
     "dependencies": {
         "drizzle-orm": "1.0.0-rc.2",
         "hono": "^4.12.18",
-        "siwe": "2.3.2"
+        "siwe": "^3.0.0"
     },
     "scripts": {
-        "start": "bun src/app.ts"
+        "start": "bun src/app.ts",
+        "test:all": "bun test --only-failures",
+        "typecheck": "tsc --noEmit"
+    },
+    "devDependencies": {
+        "drizzle-kit": "1.0.0-rc.2"
     }
 }
