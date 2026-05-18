@@ -1,15 +1,18 @@
 import { describe, expect, it } from 'bun:test'
+import { createApp } from '../../../src/create-app'
 import { generateToken, TEST_ADDRESS } from '../../helpers'
 
 // Dynamic import is required so that mock.module() runs before the module is loaded.
 // Static imports are hoisted and evaluated before any top-level code, which would
 // cause the module to be cached before mocks are registered.
 const { accountRouter } = await import('../../../src/routes/account')
+const testApp = createApp()
+testApp.route('/', accountRouter)
 
 describe('GET /account', () => {
     it('returns null for an unknown address', async () => {
         const token = await generateToken()
-        const res = await accountRouter.request('/', {
+        const res = await testApp.request('/', {
             headers: { authorization: `Bearer ${token}` },
         })
         const body = await res.json()
@@ -23,7 +26,7 @@ describe('POST /account', () => {
     it('creates and updates account', async () => {
         const token = await generateToken()
 
-        const createRes = await accountRouter.request('/', {
+        const createRes = await testApp.request('/', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
@@ -37,7 +40,7 @@ describe('POST /account', () => {
         expect(body.username).toBe('alice')
         expect(body.bio).toBe('Hello')
 
-        const updateRes = await accountRouter.request('/', {
+        const updateRes = await testApp.request('/', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
@@ -54,7 +57,7 @@ describe('POST /account', () => {
     it('returns account after creation', async () => {
         const token = await generateToken(TEST_ADDRESS)
 
-        await accountRouter.request('/', {
+        await testApp.request('/', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
@@ -63,7 +66,7 @@ describe('POST /account', () => {
             body: JSON.stringify({ username: 'bob', bio: 'Bio' }),
         })
 
-        const res = await accountRouter.request('/', {
+        const res = await testApp.request('/', {
             headers: { authorization: `Bearer ${token}` },
         })
         const body = await res.json()
