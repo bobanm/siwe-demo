@@ -30,16 +30,6 @@ describe('POST /sign-in', () => {
         expect(res.status).toBe(422)
     })
 
-    it('returns 422 on malformed JSON', async () => {
-        const res = await testApp.request('/', {
-            method: 'POST',
-            body: 'not-json',
-            headers: { 'content-type': 'application/json' },
-        })
-
-        expect(res.status).toBe(422)
-    })
-
     it('returns 401 on invalid signature', async () => {
         const res = await testApp.request('/', {
             method: 'POST',

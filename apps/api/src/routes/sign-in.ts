@@ -12,18 +12,7 @@ export const signInRouter = new Hono()
 
 signInRouter.post('/', async ctx => {
 
-    let message = '', signature = ''
-
-    try {
-        ({ message, signature } = await ctx.req.json())
-    }
-    catch (err: any) {
-        // Gracefully handle malformed JSON
-        // TODO: Move this to a shared util function
-        console.error(err)
-
-        throw new HTTPException(422, { message: 'Could not parse JSON.' })
-    }
+    const { message, signature } = await ctx.req.json()
 
     if (!message || !signature) {
 
