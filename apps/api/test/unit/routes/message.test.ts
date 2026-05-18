@@ -1,11 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import { createApp } from '../../../src/create-app'
+import { messageRouter } from '../../../src/routes/message'
 import { TEST_ADDRESS } from '../../helpers'
 
-// Dynamic import is required so that mock.module() runs before the module is loaded.
-// Static imports are hoisted and evaluated before any top-level code, which would
-// cause the module to be cached before mocks are registered.
-const { messageRouter } = await import('../../../src/routes/message')
 const testApp = createApp()
 testApp.route('/', messageRouter)
 

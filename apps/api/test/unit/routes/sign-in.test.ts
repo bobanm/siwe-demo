@@ -1,11 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import { createApp } from '../../../src/create-app'
+import { signInRouter } from '../../../src/routes/sign-in'
 import { SIWE_MESSAGE, SIWE_SIGNATURE } from '../../helpers'
 
-// Dynamic import is required so that mock.module() runs before the module is loaded.
-// Static imports are hoisted and evaluated before any top-level code, which would
-// cause the module to be cached before mocks are registered.
-const { signInRouter } = await import('../../../src/routes/sign-in')
 const testApp = createApp()
 testApp.route('/', signInRouter)
 

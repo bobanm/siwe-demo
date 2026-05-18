@@ -1,10 +1,6 @@
 import { describe, expect, it } from 'bun:test'
+import app from '../../src/app'
 import { SIWE_MESSAGE, SIWE_SIGNATURE } from '../helpers'
-
-// Dynamic import is required so that mock.module() runs before the module is loaded.
-// Static imports are hoisted and evaluated before any top-level code, which would
-// cause the module to be cached before mocks are registered.
-const app = (await import('../../src/app')).default
 
 describe('Full flow: sign-in > get account > update > create post > list posts', () => {
     it('completes full flow', async () => {
