@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
+import { ref } from 'vue'
 import SignInBox from '../../src/components/SignInBox.vue'
 import { BACKEND_URL } from '../../src/config'
 
@@ -15,10 +16,19 @@ const mockAccount = {
     bio: 'test bio',
 }
 
-const global = {
-    provide: {
-        walletClient: mockWalletClient,
-    },
+function createGlobal(options: { isSignedIn?: boolean; accessToken?: string; address?: string; username?: string; bio?: string } = {}) {
+    return {
+        provide: {
+            walletClient: mockWalletClient,
+            userState: {
+                isSignedIn: ref(options.isSignedIn ?? false),
+                accessToken: ref(options.accessToken ?? ''),
+                address: ref(options.address ?? ''),
+                username: ref(options.username ?? ''),
+                bio: ref(options.bio ?? ''),
+            },
+        },
+    }
 }
 
 beforeEach(() => {
@@ -29,7 +39,7 @@ beforeEach(() => {
 
 describe('SignInBox', () => {
     it('shows Sign-In button and no address when not signed in', () => {
-        const signInBox = mount(SignInBox, { global })
+        const signInBox = mount(SignInBox, { global: createGlobal() })
 
         expect(signInBox.find('button').text()).toBe('Sign-In With Ethereum')
         expect(signInBox.find('.start').exists()).toBe(false)
@@ -44,6 +54,7 @@ describe('SignInBox', () => {
             })
         vi.stubGlobal('fetch', fetchMock)
 
+        const global = createGlobal()
         const signInBox = mount(SignInBox, { global })
         await signInBox.find('button').trigger('click')
         await flushPromises()
@@ -51,7 +62,7 @@ describe('SignInBox', () => {
         expect(mockWalletClient.getAddresses).toHaveBeenCalled()
         expect(mockWalletClient.getChainId).toHaveBeenCalled()
 
-        const messageUrl = fetchMock.mock.calls[0][0]
+        const messageUrl = fetchMock.mock.calls[0]![0]
         expect(messageUrl).toContain(`${BACKEND_URL}/message?`)
         expect(messageUrl).toContain('address=')
         expect(messageUrl).toContain('chainId=')
@@ -81,6 +92,7 @@ describe('SignInBox', () => {
             .mockResolvedValueOnce({ ok: false, status: 401 })
         vi.stubGlobal('fetch', fetchMock)
 
+        const global = createGlobal()
         const signInBox = mount(SignInBox, { global })
         await signInBox.find('button').trigger('click')
         await flushPromises()
@@ -90,16 +102,15 @@ describe('SignInBox', () => {
     })
 
     it('shows Sign Out button and address when signed in, then resets on click', async () => {
-        const signInBox = mount(SignInBox, {
-            props: {
-                isSignedIn: true,
-                accessToken: 'jwt-token',
-                address: '0x1234567890abcdef',
-                username: 'testuser',
-                bio: 'test bio',
-            },
-            global,
+        const global = createGlobal({
+            isSignedIn: true,
+            accessToken: 'jwt-token',
+            address: '0x1234567890abcdef',
+            username: 'testuser',
+            bio: 'test bio',
         })
+
+        const signInBox = mount(SignInBox, { global })
 
         expect(signInBox.find('button').text()).toBe('Sign Out')
         expect(signInBox.find('.start').text()).toBe('0x1234567890abcdef')

@@ -1,35 +1,31 @@
 <script setup lang="ts">
 
-import { ref, provide } from 'vue'
+import { provide } from 'vue'
 import { createWalletClient, custom, type WalletClient } from 'viem'
 
 import SignInBox from './components/SignInBox.vue'
 import AccountBox from './components/AccountBox.vue'
 import ErrorBox from './components/ErrorBox.vue'
 import FeedBox from './components/FeedBox.vue'
+import { useUserState } from './composables/useUserState'
 
 let walletClient: WalletClient
 
-const isWalletInstalled = ref(false)
-const isSignedIn = ref(false)
-const accessToken = ref('')
-const address = ref('')
-const username = ref('')
-const bio = ref('')
+const userState = useUserState()
 
 if (window.ethereum) {
     walletClient = createWalletClient({ transport: custom(window.ethereum) })
     provide('walletClient', walletClient)
-    isWalletInstalled.value = true
+    provide('userState', userState)
 }
 
 </script>
 
 <template>
-    <main v-if="isWalletInstalled">
-        <SignInBox v-model:isSignedIn="isSignedIn" v-model:accessToken="accessToken" v-model:address="address" v-model:username="username" v-model:bio="bio" />
-        <AccountBox v-model:username="username" v-model:bio="bio" :accessToken="accessToken" :address="address" :isSignedIn="isSignedIn"/>
-        <FeedBox v-if="isSignedIn" :accessToken="accessToken"/>
+    <main v-if="walletClient">
+        <SignInBox />
+        <AccountBox />
+        <FeedBox v-if="userState.isSignedIn.value" />
     </main>
     <main v-else>
         <ErrorBox/>

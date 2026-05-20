@@ -1,15 +1,10 @@
 <script setup lang="ts">
 
-import { ref } from 'vue'
+import { ref, inject } from 'vue'
 import { BACKEND_URL } from '@/config'
+import type { UserState } from '@/composables/useUserState'
 
-const username = defineModel('username')
-const bio = defineModel('bio')
-
-const props = defineProps({
-    accessToken: String,
-    isSignedIn: Boolean,
-})
+const userState = inject<UserState>('userState')!
 
 const error = ref('')
 const isLoading = ref(false)
@@ -24,11 +19,11 @@ async function updateAccount() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${props.accessToken}`,
+                'Authorization': `Bearer ${userState.accessToken.value}`,
             },
             body: JSON.stringify({
-                username: username.value,
-                bio: bio.value
+                username: userState.username.value,
+                bio: userState.bio.value
             }),
         })
 
@@ -55,9 +50,9 @@ async function updateAccount() {
         <img src="../images/santa.svg" class="right zoom">
         <h2>Account</h2>
         <div v-if="error" class="error">{{ error }}</div>
-        <div><label for="username">username</label> <input id="username" v-model="username" :disabled="!isSignedIn" class="input-red"></div>
-        <div class="end"><label for="bio">bio</label> <input id="bio" v-model="bio" :disabled="!isSignedIn" class="input-red"></div>
-        <button @click="updateAccount" :disabled="!isSignedIn || isLoading" class="btn-red">
+        <div><label for="username">username</label> <input id="username" v-model="userState.username.value" :disabled="!userState.isSignedIn.value" class="input-red"></div>
+        <div class="end"><label for="bio">bio</label> <input id="bio" v-model="userState.bio.value" :disabled="!userState.isSignedIn.value" class="input-red"></div>
+        <button @click="updateAccount" :disabled="!userState.isSignedIn.value || isLoading" class="btn-red">
             {{ isLoading ? 'Updating...' : 'Update Account' }}
         </button>
     </section>

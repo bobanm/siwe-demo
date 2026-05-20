@@ -3,14 +3,10 @@
 import { ref, inject } from 'vue'
 import { BACKEND_URL } from '@/config'
 import type { WalletClient } from 'viem'
+import type { UserState } from '@/composables/useUserState'
 
-const accessToken = defineModel('accessToken')
-const isSignedIn = defineModel('isSignedIn')
-const address = defineModel('address')
-const username = defineModel('username')
-const bio = defineModel('bio')
-
-const walletClient = inject<WalletClient>('walletClient') as WalletClient
+const walletClient = inject<WalletClient>('walletClient')!
+const userState = inject<UserState>('userState')!
 
 const error = ref('')
 const isLoading = ref(false)
@@ -54,11 +50,11 @@ async function signInWithEthereum() {
 
         const { accessToken: token, account } = await signInResponse.json()
 
-        address.value = account.address
-        username.value = account.username
-        bio.value = account.bio
-        isSignedIn.value = true
-        accessToken.value = token
+        userState.address.value = account.address
+        userState.username.value = account.username
+        userState.bio.value = account.bio
+        userState.isSignedIn.value = true
+        userState.accessToken.value = token
     }
     catch (err) {
         error.value = err instanceof Error ? err.message : 'An unexpected error occurred during sign-in.'
@@ -70,11 +66,11 @@ async function signInWithEthereum() {
 
 function signOut() {
 
-    address.value = ''
-    username.value = ''
-    bio.value = ''
-    isSignedIn.value = false
-    accessToken.value = ''
+    userState.address.value = ''
+    userState.username.value = ''
+    userState.bio.value = ''
+    userState.isSignedIn.value = false
+    userState.accessToken.value = ''
 }
 
 </script>
@@ -85,11 +81,11 @@ function signOut() {
         <img src="../images/pilot.svg" class="right zoom">
         <h2>Authentication</h2>
         <div v-if="error" class="error">{{ error }}</div>
-        <button v-if="!isSignedIn" @click="signInWithEthereum" :disabled="isLoading" class="btn-green">
+        <button v-if="!userState.isSignedIn.value" @click="signInWithEthereum" :disabled="isLoading" class="btn-green">
             {{ isLoading ? 'Signing in...' : 'Sign-In With Ethereum' }}
         </button>
-        <button v-if="isSignedIn" @click="signOut" class="btn-green">Sign Out</button>
-        <div v-if="isSignedIn" class="start">{{ address }}</div>
+        <button v-if="userState.isSignedIn.value" @click="signOut" class="btn-green">Sign Out</button>
+        <div v-if="userState.isSignedIn.value" class="start">{{ userState.address.value }}</div>
     </section>
 
 </template>

@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount, flushPromises } from '@vue/test-utils'
+import { ref } from 'vue'
 import FeedBox from '../../src/components/FeedBox.vue'
 import { BACKEND_URL } from '../../src/config'
 
@@ -7,6 +8,20 @@ const mockPosts = [
     { address: '0xabc', timestamp: 1700000000, content: 'First post' },
     { address: '0xdef', timestamp: 1700000100, content: 'Second post' },
 ]
+
+function createGlobal(accessToken = '') {
+    return {
+        provide: {
+            userState: {
+                isSignedIn: ref(!!accessToken),
+                accessToken: ref(accessToken),
+                address: ref(''),
+                username: ref(''),
+                bio: ref(''),
+            },
+        },
+    }
+}
 
 function makeFetchMock(postResponse: any, getResponse: any = mockPosts) {
 
@@ -26,13 +41,13 @@ function makeFetchMock(postResponse: any, getResponse: any = mockPosts) {
 describe('FeedBox', () => {
     describe('New Post button', () => {
         it('is disabled when content is empty', () => {
-            const feedBox = mount(FeedBox)
+            const feedBox = mount(FeedBox, { global: createGlobal() })
 
             expect(feedBox.find('button').attributes('disabled')).toBeDefined()
         })
 
         it('is enabled when content has text', async () => {
-            const feedBox = mount(FeedBox)
+            const feedBox = mount(FeedBox, { global: createGlobal() })
             await feedBox.find('textarea').setValue('Hello world')
 
             expect(feedBox.find('button').attributes('disabled')).toBeUndefined()
@@ -48,7 +63,7 @@ describe('FeedBox', () => {
             })
             vi.stubGlobal('fetch', fetchMock)
 
-            const feedBox = mount(FeedBox, { props: { accessToken: 'test-token' }})
+            const feedBox = mount(FeedBox, { global: createGlobal('test-token') })
             await feedBox.find('textarea').setValue('New post')
             await feedBox.find('button').trigger('click')
 
@@ -73,20 +88,21 @@ describe('FeedBox', () => {
             )
             vi.stubGlobal('fetch', fetchMock)
 
-            const feedBox = mount(FeedBox, { props: { accessToken: 'test-token' }})
+            const feedBox = mount(FeedBox, { global: createGlobal('test-token') })
             await feedBox.find('textarea').setValue('New post')
             await feedBox.find('button').trigger('click')
             await flushPromises()
-            const posts = (feedBox.vm as any).posts
 
-            expect(posts).toHaveLength(1)
-            expect(posts[0]).toEqual(newPost)
+            const renderedPosts = feedBox.findAll('.post')
+            expect(renderedPosts).toHaveLength(1)
+            expect(renderedPosts[0]!.text()).toContain('0x123')
+            expect(renderedPosts[0]!.text()).toContain('New post')
         })
 
         it('shows error message when post submission fails', async () => {
             const fetchMock = makeFetchMock({ ok: false, status: 500 })
             vi.stubGlobal('fetch', fetchMock)
-            const feedBox = mount(FeedBox, { props: { accessToken: 'test-token' }})
+            const feedBox = mount(FeedBox, { global: createGlobal('test-token') })
             await feedBox.find('textarea').setValue('New post')
             await feedBox.find('button').trigger('click')
             await flushPromises()
@@ -103,7 +119,7 @@ describe('FeedBox', () => {
             })
             vi.stubGlobal('fetch', fetchMock)
 
-            const feedBox = mount(FeedBox, { props: { accessToken: 'test-token' }})
+            const feedBox = mount(FeedBox, { global: createGlobal('test-token') })
             await flushPromises()
             const renderedPosts = feedBox.findAll('.post')
 
@@ -130,7 +146,7 @@ describe('FeedBox', () => {
                 json: () => Promise.resolve(mockPosts),
             })
             vi.stubGlobal('fetch', fetchMock)
-            mount(FeedBox)
+            mount(FeedBox, { global: createGlobal() })
             await flushPromises()
 
             expect(fetchMock).not.toHaveBeenCalled()
@@ -142,7 +158,7 @@ describe('FeedBox', () => {
                 status: 500,
             })
             vi.stubGlobal('fetch', fetchMock)
-            const feedBox = mount(FeedBox, { props: { accessToken: 'test-token' }})
+            const feedBox = mount(FeedBox, { global: createGlobal('test-token') })
             await flushPromises()
 
             expect(feedBox.find('.error').text()).toBe('Failed to fetch posts.')

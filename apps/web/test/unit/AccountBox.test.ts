@@ -1,11 +1,26 @@
 import { describe, it, expect, vi } from 'vitest'
 import { mount } from '@vue/test-utils'
+import { ref } from 'vue'
 import AccountBox from '../../src/components/AccountBox.vue'
 import { BACKEND_URL } from '../../src/config'
 
+function createGlobal(options: { isSignedIn: boolean; accessToken?: string; address?: string; username?: string; bio?: string }) {
+    return {
+        provide: {
+            userState: {
+                isSignedIn: ref(options.isSignedIn),
+                accessToken: ref(options.accessToken ?? ''),
+                address: ref(options.address ?? ''),
+                username: ref(options.username ?? ''),
+                bio: ref(options.bio ?? ''),
+            },
+        },
+    }
+}
+
 describe('AccountBox', () => {
     it('disables all inputs and button when not signed in', () => {
-        const accountBox = mount(AccountBox, { props: { isSignedIn: false } })
+        const accountBox = mount(AccountBox, { global: createGlobal({ isSignedIn: false }) })
 
         expect(accountBox.find('#username').attributes('disabled')).toBeDefined()
         expect(accountBox.find('#bio').attributes('disabled')).toBeDefined()
@@ -13,7 +28,7 @@ describe('AccountBox', () => {
     })
 
     it('enables all inputs and button when signed in', () => {
-        const accountBox = mount(AccountBox, { props: { isSignedIn: true }})
+        const accountBox = mount(AccountBox, { global: createGlobal({ isSignedIn: true }) })
 
         expect(accountBox.find('#username').attributes('disabled')).toBeUndefined()
         expect(accountBox.find('#bio').attributes('disabled')).toBeUndefined()
@@ -28,12 +43,12 @@ describe('AccountBox', () => {
         vi.stubGlobal('fetch', fetchMock)
 
         const accountBox = mount(AccountBox, {
-            props: {
+            global: createGlobal({
                 isSignedIn: true,
                 accessToken: 'test-token',
                 username: 'testuser',
                 bio: 'test bio',
-            },
+            }),
         })
 
         await accountBox.find('button').trigger('click')
@@ -62,12 +77,12 @@ describe('AccountBox', () => {
         vi.stubGlobal('fetch', fetchMock)
 
         const accountBox = mount(AccountBox, {
-            props: {
+            global: createGlobal({
                 isSignedIn: true,
                 accessToken: 'test-token',
                 username: 'testuser',
                 bio: 'test bio',
-            },
+            }),
         })
 
         await accountBox.find('button').trigger('click')

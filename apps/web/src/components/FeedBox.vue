@@ -1,7 +1,10 @@
 <script setup lang="ts">
 
 import { BACKEND_URL } from '@/config';
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, inject } from 'vue'
+import type { UserState } from '@/composables/useUserState'
+
+const userState = inject<UserState>('userState')!
 
 type Post = {
     address: string,
@@ -9,17 +12,13 @@ type Post = {
     content: string,
 }
 
-const props = defineProps({
-    accessToken: String,
-})
-
 const posts = ref<Post[]>([])
 const content = ref('')
 const error = ref('')
 const isLoading = ref(false)
 
 onMounted(() => {
-    if (props.accessToken) {
+    if (userState.accessToken.value) {
         fetchPosts()
     }
 })
@@ -34,7 +33,7 @@ async function submitPost() {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${props.accessToken}`,
+                'Authorization': `Bearer ${userState.accessToken.value}`,
             },
             body: JSON.stringify({
                 content: content.value
@@ -67,7 +66,7 @@ async function fetchPosts() {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${props.accessToken}`,
+                'Authorization': `Bearer ${userState.accessToken.value}`,
             },
         })
 
