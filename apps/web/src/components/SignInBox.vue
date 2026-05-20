@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { inject } from 'vue'
+import { ref, inject } from 'vue'
 import { BACKEND_URL } from '@/config'
 import type { WalletClient } from 'viem'
 
@@ -12,54 +12,60 @@ const bio = defineModel('bio')
 
 const walletClient = inject<WalletClient>('walletClient') as WalletClient
 
+const error = ref('')
+const isLoading = ref(false)
+
 async function signInWithEthereum() {
 
-    const [walletAddress] = await walletClient.getAddresses()
-    if (!walletAddress) {
-        console.error('The wallet has no accounts!')
+    error.value = ''
+    isLoading.value = true
 
-        return
+    try {
+        const [walletAddress] = await walletClient.getAddresses()
+        if (!walletAddress) {
+            error.value = 'The wallet has no accounts!'
+            return
+        }
+
+        const chainId = await walletClient.getChainId()
+
+        const encodedParams = {
+            address: encodeURIComponent(walletAddress),
+            chainId: encodeURIComponent(String(chainId)),
+            origin: encodeURIComponent(window.location.origin),
+        }
+
+        const message = await (await fetch(`${BACKEND_URL}/message?${new URLSearchParams(encodedParams)}`)).text()
+
+        const signature = await walletClient.signMessage({ account: walletAddress, message })
+
+        const signInResponse = await fetch(`${BACKEND_URL}/sign-in`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message, signature }),
+        })
+
+        if (!signInResponse.ok) {
+            error.value = 'Sign-in failed. Please try again.'
+            return
+        }
+
+        const { accessToken: token, account } = await signInResponse.json()
+
+        address.value = account.address
+        username.value = account.username
+        bio.value = account.bio
+        isSignedIn.value = true
+        accessToken.value = token
     }
-
-    const chainId = await walletClient.getChainId()
-
-    const encodedParams = {
-        address: encodeURIComponent(walletAddress),
-        chainId: encodeURIComponent(String(chainId)),
-        origin: encodeURIComponent(window.location.origin),
+    catch (err) {
+        error.value = err instanceof Error ? err.message : 'An unexpected error occurred during sign-in.'
     }
-
-    const message = await (await fetch(`${BACKEND_URL}/message?${new URLSearchParams(encodedParams)}`)).text()
-    console.log(message)
-
-    const signature = await walletClient.signMessage({ account: walletAddress, message })
-    console.log(signature)
-
-    const signInResponse = await fetch(`${BACKEND_URL}/sign-in`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ message, signature }),
-    })
-
-    // TODO: improve handling of unsuccessful sign-in
-    if (!signInResponse.ok) {
-        console.error('Sign-in failed')
-
-        return
+    finally {
+        isLoading.value = false
     }
-
-    // Destructure as token, to avoid name conflict with accessToken model
-    const { accessToken: token, account } = await signInResponse.json()
-    console.log(token)
-    console.log(account)
-
-    address.value = account.address
-    username.value = account.username
-    bio.value = account.bio
-    isSignedIn.value = true
-    accessToken.value = token
 }
 
 function signOut() {
@@ -78,7 +84,10 @@ function signOut() {
     <section id="sign-in" class="top-green">
         <img src="../images/pilot.svg" class="right zoom">
         <h2>Authentication</h2>
-        <button v-if="!isSignedIn" @click="signInWithEthereum" class="btn-green">Sign-In With Ethereum</button>
+        <div v-if="error" class="error">{{ error }}</div>
+        <button v-if="!isSignedIn" @click="signInWithEthereum" :disabled="isLoading" class="btn-green">
+            {{ isLoading ? 'Signing in...' : 'Sign-In With Ethereum' }}
+        </button>
         <button v-if="isSignedIn" @click="signOut" class="btn-green">Sign Out</button>
         <div v-if="isSignedIn" class="start">{{ address }}</div>
     </section>

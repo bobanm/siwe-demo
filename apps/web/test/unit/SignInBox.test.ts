@@ -75,7 +75,7 @@ describe('SignInBox', () => {
         expect(signInBox.find('.start').text()).toBe('0x1234567890abcdef')
     })
 
-    it('logs error and does not update state when sign-in fails', async () => {
+    it('shows error message and does not update state when sign-in fails', async () => {
         const fetchMock = vi.fn()
             .mockResolvedValueOnce({ text: () => Promise.resolve('siwe message') })
             .mockResolvedValueOnce({ ok: false, status: 401 })
@@ -85,7 +85,7 @@ describe('SignInBox', () => {
         await signInBox.find('button').trigger('click')
         await flushPromises()
 
-        expect(console.error).toHaveBeenCalledWith('Sign-in failed')
+        expect(signInBox.find('.error').text()).toBe('Sign-in failed. Please try again.')
         expect(signInBox.find('button').text()).toBe('Sign-In With Ethereum')
     })
 

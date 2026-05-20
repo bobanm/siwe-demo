@@ -54,7 +54,7 @@ describe('AccountBox', () => {
         )
     })
 
-    it('logs error when update fails', async () => {
+    it('shows error message when update fails', async () => {
         const fetchMock = vi.fn().mockResolvedValue({
             ok: false,
             status: 500,
@@ -72,6 +72,6 @@ describe('AccountBox', () => {
 
         await accountBox.find('button').trigger('click')
 
-        expect(console.error).toHaveBeenCalledWith('Update failed')
+        expect(accountBox.find('.error').text()).toBe('Failed to update account. Please try again.')
     })
 })

@@ -156,9 +156,6 @@ textarea {
     border: 1px solid var(--grayishBlue);
     outline: 0 none;
     width: 95%;
-}
-
-textarea {
     resize: none;
 }
 textarea:focus {
@@ -175,4 +172,10 @@ textarea::placeholder {
 
 .follower {
     margin-left: 1.2em;
+}
+
+.error {
+    color: var(--red);
+    font-weight: var(--weight2);
+    margin: 0.5em 0;
 }

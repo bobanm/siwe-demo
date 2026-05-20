@@ -1,5 +1,6 @@
 <script setup lang="ts">
 
+import { ref } from 'vue'
 import { BACKEND_URL } from '@/config'
 
 const username = defineModel('username')
@@ -10,29 +11,40 @@ const props = defineProps({
     isSignedIn: Boolean,
 })
 
+const error = ref('')
+const isLoading = ref(false)
+
 async function updateAccount() {
 
-    const updateResponse = await fetch(`${BACKEND_URL}/account`, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${props.accessToken}`,
-        },
-        body: JSON.stringify({
-            username: username.value,
-            bio: bio.value
-        }),
-    })
+    error.value = ''
+    isLoading.value = true
 
-    // TODO: improve handling of unsuccessful account update
-    if (!updateResponse.ok) {
-        console.error('Update failed')
+    try {
+        const updateResponse = await fetch(`${BACKEND_URL}/account`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${props.accessToken}`,
+            },
+            body: JSON.stringify({
+                username: username.value,
+                bio: bio.value
+            }),
+        })
 
-        return
+        if (!updateResponse.ok) {
+            error.value = 'Failed to update account. Please try again.'
+            return
+        }
+
+        await updateResponse.json()
     }
-
-    const account = await updateResponse.json()
-    console.log(account)
+    catch (err) {
+        error.value = err instanceof Error ? err.message : 'An unexpected error occurred while updating.'
+    }
+    finally {
+        isLoading.value = false
+    }
 }
 
 </script>
@@ -42,9 +54,12 @@ async function updateAccount() {
     <section id="account" class="top-red">
         <img src="../images/santa.svg" class="right zoom">
         <h2>Account</h2>
+        <div v-if="error" class="error">{{ error }}</div>
         <div><label for="username">username</label> <input id="username" v-model="username" :disabled="!isSignedIn" class="input-red"></div>
         <div class="end"><label for="bio">bio</label> <input id="bio" v-model="bio" :disabled="!isSignedIn" class="input-red"></div>
-        <button @click="updateAccount" :disabled="!isSignedIn" class="btn-red">Update Account</button>
+        <button @click="updateAccount" :disabled="!isSignedIn || isLoading" class="btn-red">
+            {{ isLoading ? 'Updating...' : 'Update Account' }}
+        </button>
     </section>
 
 </template>

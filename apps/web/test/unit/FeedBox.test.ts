@@ -83,14 +83,15 @@ describe('FeedBox', () => {
             expect(posts[0]).toEqual(newPost)
         })
 
-        it('logs error when post submission fails', async () => {
+        it('shows error message when post submission fails', async () => {
             const fetchMock = makeFetchMock({ ok: false, status: 500 })
             vi.stubGlobal('fetch', fetchMock)
             const feedBox = mount(FeedBox, { props: { accessToken: 'test-token' }})
             await feedBox.find('textarea').setValue('New post')
             await feedBox.find('button').trigger('click')
+            await flushPromises()
 
-            expect(console.error).toHaveBeenCalledWith('Update failed')
+            expect(feedBox.find('.error').text()).toBe('Failed to create post. Please try again.')
         })
     })
 
@@ -135,16 +136,16 @@ describe('FeedBox', () => {
             expect(fetchMock).not.toHaveBeenCalled()
         })
 
-        it('logs error when fetch fails', async () => {
+        it('shows error message when fetch fails', async () => {
             const fetchMock = vi.fn().mockResolvedValue({
                 ok: false,
                 status: 500,
             })
             vi.stubGlobal('fetch', fetchMock)
-            mount(FeedBox, { props: { accessToken: 'test-token' }})
+            const feedBox = mount(FeedBox, { props: { accessToken: 'test-token' }})
             await flushPromises()
 
-            expect(console.error).toHaveBeenCalledWith('Fetch failed')
+            expect(feedBox.find('.error').text()).toBe('Failed to fetch posts.')
         })
     })
 })
