@@ -43,7 +43,7 @@ describe('POST /sign-in', () => {
             body: JSON.stringify({ message: SIWE_MESSAGE, signature: SIWE_SIGNATURE }),
             headers: { 'content-type': 'application/json' },
         })
-        const body = await res.json()
+        const body = await res.json() as Record<string, unknown>
 
         expect(res.status).toBe(200)
         expect(body.accessToken).toBeString()

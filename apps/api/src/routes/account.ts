@@ -2,7 +2,7 @@ import { Hono } from 'hono'
 import { eq } from 'drizzle-orm'
 import { db } from '../db/db'
 import { account } from '../db/schema'
-import { ContextTypes, jwtMiddleware } from '../middleware/jwt'
+import { type ContextTypes, jwtMiddleware } from '../middleware/jwt'
 
 export const accountRouter = new Hono<ContextTypes>()
 

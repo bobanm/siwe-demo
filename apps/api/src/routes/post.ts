@@ -1,7 +1,7 @@
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
 import { desc } from 'drizzle-orm'
-import { ContextTypes, jwtMiddleware } from '../middleware/jwt'
+import { type ContextTypes, jwtMiddleware } from '../middleware/jwt'
 import { db } from '../db/db'
 import { post } from '../db/schema'
 

@@ -21,7 +21,7 @@ describe('POST /post', () => {
             },
             body: JSON.stringify({ content: 'Hello world' }),
         })
-        const body = await res.json()
+        const body = await res.json() as Record<string, unknown>
 
         expect(res.status).toBe(200)
         expect(body.content).toBe('Hello world')

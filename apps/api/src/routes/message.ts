@@ -12,16 +12,16 @@ messageRouter.get('/', ctx => {
     }
 
     const { origin, address, chainId } = ctx.req.query()
-    const decodedOrigin = decodeURIComponent(origin)
+    const decodedOrigin = decodeURIComponent(origin!)
 
     try {
         const siweMessage = new SiweMessage({
             domain: new URL(decodedOrigin).host,
-            address: decodeURIComponent(address as string),
+            address: decodeURIComponent(address!),
             statement: 'Sign-In With Ethereum Demo',
             uri: decodedOrigin,
             version: '1',
-            chainId: Number(decodeURIComponent(chainId as string)),
+            chainId: Number(decodeURIComponent(chainId!)),
         })
 
         return ctx.text(siweMessage.prepareMessage())

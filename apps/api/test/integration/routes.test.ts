@@ -14,7 +14,7 @@ describe('Full flow: sign-in > get account > update > create post > list posts',
         expect(signInRes.status).toBe(200)
 
         // 2. Update account
-        const { accessToken } = await signInRes.json()
+        const { accessToken } = await signInRes.json() as { accessToken: string }
         const updateAccountRes = await app.request('/account', {
             method: 'POST',
             headers: {
@@ -30,7 +30,7 @@ describe('Full flow: sign-in > get account > update > create post > list posts',
         const getAccountRes = await app.request('/account', {
             headers: { authorization: `Bearer ${accessToken}` },
         })
-        const account = await getAccountRes.json()
+        const account = await getAccountRes.json() as { username: string; bio: string }
 
         expect(account.username).toBe('fullflow')
         expect(account.bio).toBe('Integration test')
@@ -51,9 +51,9 @@ describe('Full flow: sign-in > get account > update > create post > list posts',
         const getPostsRes = await app.request('/post', {
             headers: { authorization: `Bearer ${accessToken}` },
         })
-        const posts = await getPostsRes.json()
+        const posts = await getPostsRes.json() as { content: string }[]
 
         expect(posts).toHaveLength(1)
-        expect(posts[0].content).toBe('Full flow post')
+        expect(posts[0]!.content).toBe('Full flow post')
     })
 })

@@ -1,6 +1,6 @@
 import { Hono } from 'hono'
 import { sign } from 'hono/jwt'
-import { JWTPayload } from 'hono/utils/jwt/types'
+import { type JWTPayload } from 'hono/utils/jwt/types'
 import { HTTPException } from 'hono/http-exception'
 import { SiweMessage } from 'siwe'
 import { eq } from 'drizzle-orm'

@@ -12,7 +12,7 @@ describe('GET /account', () => {
         const res = await testApp.request('/', {
             headers: { authorization: `Bearer ${token}` },
         })
-        const body = await res.json()
+        const body = await res.json() as Record<string, unknown> | null
 
         expect(res.status).toBe(200)
         expect(body).toBeNull()
@@ -31,7 +31,7 @@ describe('POST /account', () => {
             },
             body: JSON.stringify({ username: 'alice', bio: 'Hello' }),
         })
-        let body = await createRes.json()
+        let body = await createRes.json() as Record<string, unknown>
 
         expect(createRes.status).toBe(200)
         expect(body.username).toBe('alice')
@@ -45,7 +45,7 @@ describe('POST /account', () => {
             },
             body: JSON.stringify({ username: 'alice2', bio: 'Updated' }),
         })
-        body = await updateRes.json()
+        body = await updateRes.json() as Record<string, unknown>
 
         expect(body.username).toBe('alice2')
         expect(body.bio).toBe('Updated')
@@ -66,7 +66,7 @@ describe('POST /account', () => {
         const res = await testApp.request('/', {
             headers: { authorization: `Bearer ${token}` },
         })
-        const body = await res.json()
+        const body = await res.json() as Record<string, unknown>
 
         expect(body.address).toBe(TEST_ADDRESS)
         expect(body.username).toBe('bob')
