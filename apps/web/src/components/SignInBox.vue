@@ -15,6 +15,12 @@ const walletClient = inject<WalletClient>('walletClient') as WalletClient
 async function signInWithEthereum() {
 
     const [walletAddress] = await walletClient.getAddresses()
+    if (!walletAddress) {
+        console.error('The wallet has no accounts!')
+
+        return
+    }
+
     const chainId = await walletClient.getChainId()
 
     const encodedParams = {
