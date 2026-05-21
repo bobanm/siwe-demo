@@ -179,3 +179,14 @@ textarea::placeholder {
     font-weight: var(--weight2);
     margin: 0.5em 0;
 }
+
+a {
+    font-weight: var(--weight2);
+    color: var(--red);
+    text-decoration: none;
+    transition: color 1s ease;
+}
+
+a:hover {
+    color: var(--grayText);
+}

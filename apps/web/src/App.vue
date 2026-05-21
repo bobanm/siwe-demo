@@ -7,6 +7,7 @@ import SignInBox from './components/SignInBox.vue'
 import AccountBox from './components/AccountBox.vue'
 import ErrorBox from './components/ErrorBox.vue'
 import FeedBox from './components/FeedBox.vue'
+import AboutBox from './components/AboutBox.vue'
 import { useUserState } from './composables/useUserState'
 
 let walletClient: WalletClient
@@ -32,6 +33,7 @@ if (window.ethereum) {
     </main>
 
     <footer>
+        <AboutBox />
         <a href="https://boban.ninja/"><img src="./images/house.svg" class="zoom"></a>
         <a href="https://github.com/bobanm/siwe-demo/" target="_blank" rel="noopener noreferrer"><img src="./images/github.svg" class="zoom"></a>
     </footer>
