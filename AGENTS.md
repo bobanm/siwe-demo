@@ -33,7 +33,7 @@ bun run --cwd apps/web test
 - **Auth flow**: `/message` → SIWE message, `/sign-in` → verify & issue JWT. Routes `/account`, `/post` require `jwtMiddleware`.
 - **Secret (dev)**: hardcoded in `apps/api/src/config.ts`. Do not commit production secrets.
 - **Web base path**: `/siwe/` (deployed to nested path on `boban.ninja/siwe`).
-- **API URL**: configured via `VITE_BACKEND_URL` env var, falls back to `http://localhost:3000`.
+- **API URL**: configured via `SIWE_BACKEND_URL` env var, falls back to `http://localhost:3000`.
 - **Web state management**: `useUserState` composable (singleton) provided via `provide('userState', ...)` in App.vue, consumed via `inject` in child components.
 - **Linting**: oxlint at workspace root.
 - **Tests**
