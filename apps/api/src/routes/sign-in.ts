@@ -2,22 +2,24 @@ import { Hono } from 'hono'
 import { sign } from 'hono/jwt'
 import { type JWTPayload } from 'hono/utils/jwt/types'
 import { HTTPException } from 'hono/http-exception'
+import { z } from 'zod'
 import { SiweMessage } from 'siwe'
 import { eq } from 'drizzle-orm'
 import { db } from '../db/db'
 import { account } from '../db/schema'
+import { zValidator } from '../middleware/z-validator'
 import { SECRET } from '../config'
+
+const signInSchema = z.object({
+    message: z.string(),
+    signature: z.string(),
+})
 
 export const signInRouter = new Hono()
 
-signInRouter.post('/', async ctx => {
+signInRouter.post('/', zValidator('json', signInSchema), async ctx => {
 
-    const { message, signature } = await ctx.req.json()
-
-    if (!message || !signature) {
-
-        throw new HTTPException(422, { message: 'Request must contain 2 mandatory arguments: message and signature.' })
-    }
+    const { message, signature } = ctx.req.valid('json')
 
     try {
         const siweMessage = new SiweMessage(message)

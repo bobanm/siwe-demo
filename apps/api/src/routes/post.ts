@@ -1,9 +1,15 @@
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
+import { z } from 'zod'
 import { desc } from 'drizzle-orm'
 import { type ContextTypes, jwtMiddleware } from '../middleware/jwt'
 import { db } from '../db/db'
 import { post } from '../db/schema'
+import { zValidator } from '../middleware/z-validator'
+
+const postSchema = z.object({
+    content: z.string().min(1).max(1000),
+})
 
 export const postRouter = new Hono<ContextTypes>()
 
@@ -16,10 +22,9 @@ postRouter.get('/', async ctx => {
     return ctx.json(posts)
 })
 
-postRouter.post('/', async ctx => {
+postRouter.post('/', zValidator('json', postSchema), async ctx => {
 
-    // TODO: Add error handling for parsing JSON
-    const { content } = await ctx.req.json()
+    const { content } = ctx.req.valid('json')
 
     try {
         const posts = await db.insert(post).values({
