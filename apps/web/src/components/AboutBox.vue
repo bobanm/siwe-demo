@@ -36,7 +36,7 @@ const isOpen = ref(false)
 
                 <h3>Tech Stack</h3>
                 <ul>
-                    <li><strong>Frontend:</strong> Vue 3 + Vite + Viem</li>
+                    <li><strong>Frontend:</strong> Vue 3 + Vite + viem</li>
                     <li><strong>Backend:</strong> Hono + Drizzle + SQLite</li>
                     <li><strong>Auth:</strong> Sign-In with Ethereum (SIWE) + JWT</li>
                 </ul>
