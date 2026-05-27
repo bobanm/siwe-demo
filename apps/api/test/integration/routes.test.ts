@@ -5,7 +5,7 @@ import { SIWE_MESSAGE, SIWE_SIGNATURE } from '../helpers'
 describe('Full flow: sign-in > get account > update > create post > list posts', () => {
     it('completes full flow', async () => {
         // 1. Sign in
-        const signInRes = await app.request('/sign-in', {
+        const signInRes = await app.request('/api/sign-in', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ message: SIWE_MESSAGE, signature: SIWE_SIGNATURE }),
@@ -15,7 +15,7 @@ describe('Full flow: sign-in > get account > update > create post > list posts',
 
         // 2. Update account
         const { accessToken } = await signInRes.json() as { accessToken: string }
-        const updateAccountRes = await app.request('/account', {
+        const updateAccountRes = await app.request('/api/account', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
@@ -27,7 +27,7 @@ describe('Full flow: sign-in > get account > update > create post > list posts',
         expect(updateAccountRes.status).toBe(200)
 
         // 3. Get account details
-        const getAccountRes = await app.request('/account', {
+        const getAccountRes = await app.request('/api/account', {
             headers: { authorization: `Bearer ${accessToken}` },
         })
         const account = await getAccountRes.json() as { username: string; bio: string }
@@ -36,7 +36,7 @@ describe('Full flow: sign-in > get account > update > create post > list posts',
         expect(account.bio).toBe('Integration test')
 
         // 4. Submit a post
-        const submitPostRes = await app.request('/post', {
+        const submitPostRes = await app.request('/api/post', {
             method: 'POST',
             headers: {
                 'content-type': 'application/json',
@@ -48,7 +48,7 @@ describe('Full flow: sign-in > get account > update > create post > list posts',
         expect(submitPostRes.status).toBe(200)
 
         // 5. Get all posts
-        const getPostsRes = await app.request('/post', {
+        const getPostsRes = await app.request('/api/post', {
             headers: { authorization: `Bearer ${accessToken}` },
         })
         const posts = await getPostsRes.json() as { content: string }[]

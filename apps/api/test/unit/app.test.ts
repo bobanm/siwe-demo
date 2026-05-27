@@ -3,7 +3,7 @@ import app from '../../src/app'
 
 describe('Global error handling', () => {
     it('returns 400 on malformed JSON', async () => {
-        const res = await app.request('/sign-in', {
+        const res = await app.request('/api/sign-in', {
             method: 'POST',
             body: 'not-json',
             headers: { 'content-type': 'application/json' },

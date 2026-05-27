@@ -4,7 +4,7 @@ import { signInRouter } from './routes/sign-in'
 import { accountRouter } from './routes/account'
 import { postRouter } from './routes/post'
 
-const app = createApp()
+const app = createApp().basePath('/api')
 
 app.route('/message', messageRouter)
 app.route('/sign-in', signInRouter)
