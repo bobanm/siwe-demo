@@ -14,6 +14,8 @@
         "typecheck": "tsc --noEmit"
     },
     "devDependencies": {
-        "drizzle-kit": "1.0.0-rc.2"
+        "@cloudflare/workers-types": "^4.20260527.1",
+        "drizzle-kit": "1.0.0-rc.2",
+        "wrangler": "^4.95.0"
     }
 }
