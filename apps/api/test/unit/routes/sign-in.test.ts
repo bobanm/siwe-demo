@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'bun:test'
 import { createApp } from '../../../src/create-app'
 import { signInRouter } from '../../../src/routes/sign-in'
 import { SIWE_MESSAGE, SIWE_SIGNATURE } from '../../helpers'
+import { env } from 'cloudflare:workers'
 
 const testApp = createApp()
 testApp.route('/', signInRouter)
@@ -12,7 +12,7 @@ describe('POST /sign-in', () => {
             method: 'POST',
             body: JSON.stringify({ signature: SIWE_SIGNATURE }),
             headers: { 'content-type': 'application/json' },
-        })
+        }, env)
 
         expect(res.status).toBe(422)
     })
@@ -22,7 +22,7 @@ describe('POST /sign-in', () => {
             method: 'POST',
             body: JSON.stringify({ message: SIWE_MESSAGE }),
             headers: { 'content-type': 'application/json' },
-        })
+        }, env)
 
         expect(res.status).toBe(422)
     })
@@ -30,9 +30,9 @@ describe('POST /sign-in', () => {
     it('returns 401 on invalid signature', async () => {
         const res = await testApp.request('/', {
             method: 'POST',
-            body: JSON.stringify({ message: SIWE_MESSAGE, signature: 'bad signature' }),
+            body: JSON.stringify({ message: SIWE_MESSAGE, signature: '0x-bad-signature' }),
             headers: { 'content-type': 'application/json' },
-        })
+        }, env)
 
         expect(res.status).toBe(401)
     })
@@ -42,11 +42,11 @@ describe('POST /sign-in', () => {
             method: 'POST',
             body: JSON.stringify({ message: SIWE_MESSAGE, signature: SIWE_SIGNATURE }),
             headers: { 'content-type': 'application/json' },
-        })
+        }, env)
         const body = await res.json() as Record<string, unknown>
 
         expect(res.status).toBe(200)
-        expect(body.accessToken).toBeString()
+        expect(body.accessToken).toBeTypeOf('string')
         expect(body.account).toBeDefined()
     })
 })

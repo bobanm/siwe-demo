@@ -1,7 +1,7 @@
-import { describe, expect, it } from 'bun:test'
 import { createApp } from '../../../src/create-app'
 import { accountRouter } from '../../../src/routes/account'
 import { generateToken, TEST_ADDRESS } from '../../helpers'
+import { env } from 'cloudflare:workers'
 
 const testApp = createApp()
 testApp.route('/', accountRouter)
@@ -11,7 +11,7 @@ describe('GET /account', () => {
         const token = await generateToken()
         const res = await testApp.request('/', {
             headers: { authorization: `Bearer ${token}` },
-        })
+        }, env)
         const body = await res.json() as Record<string, unknown> | null
 
         expect(res.status).toBe(200)
@@ -30,7 +30,7 @@ describe('POST /account', () => {
                 authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ username: 'alice', bio: 'Hello' }),
-        })
+        }, env)
         let body = await createRes.json() as Record<string, unknown>
 
         expect(createRes.status).toBe(200)
@@ -44,7 +44,7 @@ describe('POST /account', () => {
                 authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ username: 'alice2', bio: 'Updated' }),
-        })
+        }, env)
         body = await updateRes.json() as Record<string, unknown>
 
         expect(body.username).toBe('alice2')
@@ -61,11 +61,11 @@ describe('POST /account', () => {
                 authorization: `Bearer ${token}`,
             },
             body: JSON.stringify({ username: 'bob', bio: 'Bio' }),
-        })
+        }, env)
 
         const res = await testApp.request('/', {
             headers: { authorization: `Bearer ${token}` },
-        })
+        }, env)
         const body = await res.json() as Record<string, unknown>
 
         expect(body.address).toBe(TEST_ADDRESS)

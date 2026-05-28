@@ -1,13 +1,17 @@
-import { describe, expect, it } from 'bun:test'
-import app from '../../src/app'
+import worker from '../../src/app'
+import { createExecutionContext, waitOnExecutionContext } from 'cloudflare:test'
+import { env } from 'cloudflare:workers'
 
 describe('Global error handling', () => {
     it('returns 400 on malformed JSON', async () => {
-        const res = await app.request('/api/sign-in', {
+        const request = new Request('http://localhost/api/sign-in', {
             method: 'POST',
             body: 'not-json',
             headers: { 'content-type': 'application/json' },
         })
+        const ctx = createExecutionContext()
+        const res = await worker.fetch(request, env, ctx)
+        await waitOnExecutionContext(ctx)
 
         expect(res.status).toBe(400)
         expect(await res.json()).toEqual({ error: 'Malformed JSON in request body' })

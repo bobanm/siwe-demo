@@ -8,7 +8,10 @@
     "allowJs": true,
     "verbatimModuleSyntax": true,
     "noEmit": true,
-    "types": ["bun", "@cloudflare/workers-types"],
+    "types": [
+      "@cloudflare/vitest-pool-workers/types",
+      "vitest/globals"
+    ],
     "strict": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,

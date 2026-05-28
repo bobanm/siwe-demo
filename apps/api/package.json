@@ -3,7 +3,8 @@
     "version": "0.0.0",
     "scripts": {
         "dev": "wrangler dev",
-        "test:all": "bun test --only-failures",
+        "test": "vitest run",
+        "test:watch": "vitest",
         "typecheck": "tsc --noEmit"
     },
     "dependencies": {
@@ -14,7 +15,7 @@
         "zod": "^4.4.3"
     },
     "devDependencies": {
-        "@cloudflare/workers-types": "^4.20260528.1",
+        "@cloudflare/vitest-pool-workers": "^0.16.10",
         "drizzle-kit": "1.0.0-rc.2",
         "vitest": "^4.1.7",
         "wrangler": "^4.95.0"

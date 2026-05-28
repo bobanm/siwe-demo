@@ -1,6 +1,6 @@
 import { sign } from 'hono/jwt'
+import { env } from 'cloudflare:workers'
 
-export const TEST_SECRET = 'test-secret-for-siwe-demo-tests'
 export const TEST_ADDRESS = '0x1234567890123456789012345678901234567890'
 
 export const SIWE_MESSAGE =
@@ -24,5 +24,5 @@ export async function generateToken(address = TEST_ADDRESS): Promise<string> {
         exp: Math.floor(Date.now() / 1000) + 60 * 60,
     }
 
-    return sign(claims, TEST_SECRET)
+    return sign(claims, env.SECRET)
 }
