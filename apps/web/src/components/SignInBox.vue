@@ -17,7 +17,7 @@ async function signInWithEthereum() {
     isLoading.value = true
 
     try {
-        const [walletAddress] = await walletClient.getAddresses()
+        const [walletAddress] = await walletClient.requestAddresses()
         if (!walletAddress) {
             error.value = 'The wallet has no accounts!'
             return

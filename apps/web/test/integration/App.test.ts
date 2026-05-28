@@ -3,7 +3,7 @@ import App from '../../src/App.vue'
 
 vi.mock('viem', () => ({
     createWalletClient: vi.fn().mockReturnValue({
-        getAddresses: vi.fn().mockResolvedValue(['0x1234']),
+        requestAddresses: vi.fn().mockResolvedValue(['0x1234']),
         getChainId: vi.fn().mockResolvedValue(1),
         signMessage: vi.fn().mockResolvedValue('0xsignature'),
     }),

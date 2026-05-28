@@ -4,7 +4,7 @@ import SignInBox from '../../src/components/SignInBox.vue'
 import { BACKEND_URL } from '../../src/config'
 
 const mockWalletClient = {
-    getAddresses: vi.fn().mockResolvedValue(['0x1234567890abcdef']),
+    requestAddresses: vi.fn().mockResolvedValue(['0x1234567890abcdef']),
     getChainId: vi.fn().mockResolvedValue(1),
     signMessage: vi.fn().mockResolvedValue('0xsignature'),
 }
@@ -31,7 +31,7 @@ function createGlobal(options: { isSignedIn?: boolean; accessToken?: string; add
 }
 
 beforeEach(() => {
-    mockWalletClient.getAddresses.mockClear().mockResolvedValue(['0x1234567890abcdef'])
+    mockWalletClient.requestAddresses.mockClear().mockResolvedValue(['0x1234567890abcdef'])
     mockWalletClient.getChainId.mockClear().mockResolvedValue(1)
     mockWalletClient.signMessage.mockClear().mockResolvedValue('0xsignature')
 })
@@ -58,7 +58,7 @@ describe('SignInBox', () => {
         await signInBox.find('button').trigger('click')
         await flushPromises()
 
-        expect(mockWalletClient.getAddresses).toHaveBeenCalled()
+        expect(mockWalletClient.requestAddresses).toHaveBeenCalled()
         expect(mockWalletClient.getChainId).toHaveBeenCalled()
 
         const messageUrl = fetchMock.mock.calls[0]![0]
