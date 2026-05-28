@@ -1,43 +1,26 @@
 # siwe-demo
 
-Bun workspace monorepo -- `Sign-In with Ethereum` demo app, targeting Cloudflare Workers + D1.
+Bun workspace monorepo -- `Sign-In with Ethereum` demo app. Built for deployment on Cloudflare Workers + D1.
 
 ## Structure
 
 ```
 apps/
-  api/   Hono + Drizzle + Cloudflare D1 + SIWE auth
-  web/   Vue 3 + Vite + viem + SIWE
-```
-
-## Commands
-
-```bash
-# API backend -- starts via Wrangler (emulates Cloudflare Workers + D1 locally)
-bun run --cwd apps/api dev
-
-# web frontend -- dev server (Vite, usually :5173)
-bun run --cwd apps/web dev
-
-# lint (oxlint, from workspace root)
-bun run lint
-
-# web typecheck & tests (from apps/web)
-bun run --cwd apps/web typecheck
-bun run --cwd apps/web test
+  api/   Hono + Drizzle + Cloudflare D1 + SIWE auth + JWT
+  web/   Vue 3 + Vite + viem
 ```
 
 ## Key details
 
+- **Deployment**: Frontend and backend are deployed together as a single Cloudflare Worker via Workers Assets. Frontend is built to `apps/web/dist/`, served by the `[assets]` binding in `wrangler.toml`. API routes live under `/api/*`.
 - **Backend DB**: Cloudflare D1 (`siwe-db`). Locally emulated by Wrangler (SQLite-backed, stored in `.wrangler/`).
-- **Auth flow**: `/message` → SIWE message, `/sign-in` → verify & issue JWT. Routes `/account`, `/post` require `jwtMiddleware`.
-- **Secret (dev)**: stored in `apps/api/.dev.vars` (gitignored). Do not commit production secrets.
-- **Web base path**: `/siwe/` (deployed to nested path on `boban.ninja/siwe`).
-- **API URL**: configured via `SIWE_BACKEND_URL` env var. In development, Vite server proxies all `/api` requests to `http://localhost:8787/api` (Wrangler's default port).
+- **Auth flow**: `/api/message` → SIWE message, `/api/sign-in` → verify & issue JWT. Routes `/api/account`, `/api/post` require `jwtMiddleware`.
+- **Secret (dev)**: stored in `apps/api/.dev.vars` (gitignored). For production, use `wrangler secret put SECRET`.
+- **API URL**: defaults to `/api` (same origin). In Vite dev mode, proxied to `http://localhost:8787/api` (Wrangler's default port).
 - **Web state management**: `useUserState` composable (singleton) provided via `provide('userState', ...)` in App.vue, consumed via `inject` in child components.
 - **Linting**: oxlint at workspace root.
 - **Tests**
-  - API -- Bun unit and integration tests in `apps/api/test/`
+  - API -- Vitest + Cloudflare Vitest Pool Workers unit and integration tests in `apps/api/test/`.
   - Web app -- Vitest + @vue/test-utils + happy-dom. Unit tests per component + integration test in `apps/web/test/`.
 
 ## Database Migrations

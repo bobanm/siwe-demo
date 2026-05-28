@@ -15,17 +15,21 @@ git clone https://github.com/bobanm/siwe-demo.git
 cd siwe-demo
 bun install
 
-# 2. Generate and apply database migrations
+# 2. Set up local database
 bun run --cwd apps/api drizzle-kit generate
-# Then flatten for Wrangler (see "Database Migrations" below)
 bun run --cwd apps/api wrangler d1 migrations apply siwe-db --local
 
-# 3. Start both apps (in separate terminals)
+# 3. [optional] Run data seed
+wrangler d1 execute siwe-db --local --file ./apps/api/test/seed-data.sql
+
+# 4. Start both apps (in separate terminals)
 bun run --cwd apps/api dev    # Backend via Wrangler on http://localhost:8787
 bun run --cwd apps/web dev    # Frontend on http://localhost:5173
 ```
 
-Open `http://localhost:5173/siwe/` in your browser with a Web3 wallet enabled.
+Open `http://localhost:5173/` in your browser with a Web3 wallet enabled.
+
+> **Note**: During development, the Vite dev server proxies `/api` requests to Wrangler on port 8787.
 
 ## Project Structure
 
@@ -76,7 +80,7 @@ Cloudflare D1 database (`siwe-db`), managed by Drizzle ORM. Locally emulated by 
 
 ```bash
 bun run --cwd apps/api dev          # Start via Wrangler (D1 emulation, port 8787)
-bun run --cwd apps/api test:all     # Run tests
+bun run --cwd apps/api test         # Run tests
 bun run --cwd apps/api typecheck    # TypeScript check
 ```
 
@@ -103,14 +107,14 @@ Vue 3 SPA with viem for Ethereum wallet interactions.
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `SIWE_BACKEND_URL` | `http://localhost:8787` | URL of the API backend |
+| `SIWE_BACKEND_URL` | `/api` | URL of the API backend (same origin by default) |
 
 ### Scripts
 
 ```bash
 bun run --cwd apps/web dev          # Vite dev server (:5173)
 bun run --cwd apps/web preview      # Preview production build
-bun run --cwd apps/web build-only   # Production build
+bun run --cwd apps/web build        # Production build
 bun run --cwd apps/web typecheck    # Vue TypeScript check
 bun run --cwd apps/web test         # Run Vitest tests
 bun run --cwd apps/web test:watch   # Tests in watch mode
@@ -128,8 +132,34 @@ Shared reactive state via the `useUserState` composable, provided through Vue's 
 bun run lint    # Runs oxlint across the workspace
 ```
 
-## Deployment
+## Deployment to Cloudflare
 
-The frontend is configured with a base path of `/siwe/` for deployment to a nested route (e.g., `boban.ninja/siwe`). Set `SIWE_BACKEND_URL` to point to your production API.
+Frontend and backend are deployed together as a single Cloudflare Worker via [Workers Assets](https://developers.cloudflare.com/workers/static-assets/binding/). The frontend is built to `apps/web/dist/` and served by the `[assets]` binding in `wrangler.toml`. API routes live under `/api/*`.
 
-> **Warning**: The JWT secret is stored in `apps/api/.dev.vars` for local development. For production, use Cloudflare Secrets (`wrangler secret put SECRET`).
+### Prerequisites
+
+- [Wrangler CLI](https://developers.cloudflare.com/workers/wrangler/install-and-update/) authenticated (`wrangler login`)
+- Cloudflare D1 database created
+- JWT secret set via Cloudflare Secrets
+
+### One-time setup
+
+```bash
+# Create D1 database (outputs a database_id to add to wrangler.toml)
+wrangler d1 create siwe-db
+
+# Apply migrations to remote database
+wrangler d1 migrations apply siwe-db --remote
+
+# Set JWT secret for production
+wrangler secret put SECRET
+```
+
+### Deploy
+
+```bash
+# Build frontend and deploy to Cloudflare Workers
+bun run deploy
+```
+
+> **Warning**: The JWT secret is stored in `apps/api/.dev.vars` for local development only. For production, use Cloudflare Secrets (`wrangler secret put SECRET`).

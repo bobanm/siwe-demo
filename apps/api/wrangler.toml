@@ -11,3 +11,7 @@ binding = "DB"
 database_name = "siwe-db"
 database_id = "db13a0f0-52cb-4153-827c-af4ebee30322"
 migrations_dir = "drizzle"
+
+[observability.logs]
+enabled = true
+invocation_logs = true
