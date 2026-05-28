@@ -1,6 +1,7 @@
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import { SiweMessage } from 'siwe'
+import { createSiweMessage, generateSiweNonce } from 'viem/siwe'
+import type { Hex } from 'viem'
 
 export const messageRouter = new Hono()
 
@@ -15,16 +16,17 @@ messageRouter.get('/', ctx => {
     const decodedOrigin = decodeURIComponent(origin!)
 
     try {
-        const siweMessage = new SiweMessage({
+        const siweMessage = createSiweMessage({
             domain: new URL(decodedOrigin).host,
-            address: decodeURIComponent(address!),
+            address: decodeURIComponent(address!) as Hex,
             statement: 'Sign-In With Ethereum Demo',
             uri: decodedOrigin,
             version: '1',
             chainId: Number(decodeURIComponent(chainId!)),
+            nonce: generateSiweNonce(),
         })
 
-        return ctx.text(siweMessage.prepareMessage())
+        return ctx.text(siweMessage)
     }
     catch (err: any) {
         console.error(err)
