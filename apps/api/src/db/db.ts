@@ -1,5 +1,9 @@
-import { drizzle } from 'drizzle-orm/bun-sqlite'
-import * as schema from './schema'
-import { DB_PATH } from '../config'
+import type { DrizzleD1Database } from 'drizzle-orm/d1'
+import type * as schema from './schema'
 
-export const db = drizzle(DB_PATH, { schema })
+export let db: DrizzleD1Database<typeof schema>
+
+export function setDb(instance: DrizzleD1Database<typeof schema>) {
+
+    db ??= instance
+}

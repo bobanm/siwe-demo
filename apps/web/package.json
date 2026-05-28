@@ -6,7 +6,7 @@
         "preview": "vite preview",
         "build-only": "vite build",
         "typecheck": "vue-tsc --noEmit",
-        "test": "vitest run --reporter=dot",
+        "test": "vitest run",
         "test:watch": "vitest"
     },
     "dependencies": {

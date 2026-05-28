@@ -1,0 +1,8 @@
+name = "siwe-api"
+main = "src/app.ts"
+compatibility_date = "2026-05-28"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "siwe-db"
+migrations_dir = "drizzle"

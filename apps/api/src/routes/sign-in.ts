@@ -8,14 +8,14 @@ import { eq } from 'drizzle-orm'
 import { db } from '../db/db'
 import { account } from '../db/schema'
 import { zValidator } from '../middleware/z-validator'
-import { SECRET } from '../config'
+import type { Bindings } from '../types'
 
 const signInSchema = z.object({
     message: z.string(),
     signature: z.string(),
 })
 
-export const signInRouter = new Hono()
+export const signInRouter = new Hono<{ Bindings: Bindings }>()
 
 signInRouter.post('/', zValidator('json', signInSchema), async ctx => {
 
@@ -40,7 +40,7 @@ signInRouter.post('/', zValidator('json', signInSchema), async ctx => {
             sub: siweMessage.address,
             exp: Math.floor(Date.now() / 1000) + 60 * 60 * 2, // The token expires in 2 hours
         }
-        const accessToken = await sign(claims, SECRET)
+        const accessToken = await sign(claims, ctx.env.SECRET)
 
         return ctx.json({ accessToken, account: accounts[0] })
     }

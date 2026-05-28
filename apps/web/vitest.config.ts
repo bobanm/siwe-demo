@@ -13,7 +13,7 @@ export default defineConfig({
         environment: 'happy-dom',
         globals: true,
         setupFiles: ['./test/setup.ts'],
-        reporter: 'dot',
+        reporters: 'dot',
         silent: true,  // suppresses all console.log/warn/error output
     }
 })

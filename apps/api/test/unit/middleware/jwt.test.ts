@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'bun:test'
 import { Hono } from 'hono'
 import { jwt, sign } from 'hono/jwt'
-import { SECRET } from '../../../src/config'
 
+const SECRET = 'jwt-test-secret'
 const jwtMiddleware = jwt({ secret: SECRET, alg: 'HS256' })
 
 const testApp = new Hono()

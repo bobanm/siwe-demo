@@ -1,20 +1,20 @@
 {
     "name": "api",
     "version": "0.0.0",
-    "dependencies": {
-        "@hono/zod-validator": "^0.8.0",
-        "drizzle-orm": "1.0.0-rc.2",
-        "hono": "^4.12.18",
-        "siwe": "^3.0.0",
-        "zod": "^4.4.3"
-    },
     "scripts": {
-        "start": "bun src/app.ts",
+        "dev": "wrangler dev",
         "test:all": "bun test --only-failures",
         "typecheck": "tsc --noEmit"
     },
+    "dependencies": {
+        "@hono/zod-validator": "^0.8.0",
+        "drizzle-orm": "1.0.0-rc.2",
+        "hono": "^4.12.23",
+        "siwe": "^3.0.0",
+        "zod": "^4.4.3"
+    },
     "devDependencies": {
-        "@cloudflare/workers-types": "^4.20260527.1",
+        "@cloudflare/workers-types": "^4.20260528.1",
         "drizzle-kit": "1.0.0-rc.2",
         "wrangler": "^4.95.0"
     }

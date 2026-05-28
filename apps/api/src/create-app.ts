@@ -4,6 +4,7 @@ import { logger } from 'hono/logger'
 import { HTTPException } from 'hono/http-exception'
 
 export function createApp() {
+
     const app = new Hono()
 
     app.use(logger())
